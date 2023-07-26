@@ -6,8 +6,8 @@ from httpx import AsyncClient
 from zimran.fastapi import create_app
 
 
-@pytest.fixture  # type: ignore[misc]
-async def client() -> AsyncGenerator:
+@pytest.fixture
+async def client() -> AsyncGenerator[AsyncClient, None]:
     app = create_app()
 
     async with AsyncClient(app=app, base_url='http://test') as async_client:

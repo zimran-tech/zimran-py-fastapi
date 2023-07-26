@@ -16,6 +16,6 @@ setup(
     long_description_content_type='text/markdown',
     packages=find_namespace_packages(include=['zimran.*']),
     install_requires=install_requires,
-    python_requires='>=3.10',
+    python_requires='>=3.11',
     zip_file=False,
 )
