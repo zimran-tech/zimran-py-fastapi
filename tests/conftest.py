@@ -13,11 +13,11 @@ from zimran.fastapi.dependencies import get_user_id
 def app() -> FastAPI:
     app_ = create_app()
 
-    async def endpoint(user_id: int = Depends(get_user_id)) -> Response:
+    async def handler(user_id: int = Depends(get_user_id)) -> Response:
         return JSONResponse({'user_id': user_id})
 
-    app_.add_api_route('/without-trailing-slash', endpoint)
-    app_.add_api_route('/user-id/', endpoint)
+    app_.add_api_route('/without-trailing-slash', handler)
+    app_.add_api_route('/user-id/', handler)
     return app_
 
 
