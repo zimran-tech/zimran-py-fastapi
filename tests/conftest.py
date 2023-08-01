@@ -1,20 +1,23 @@
 from typing import AsyncGenerator
 
 import pytest
-from fastapi import FastAPI, Response, status
+from fastapi import Depends, FastAPI, Response
+from fastapi.responses import JSONResponse
 from httpx import AsyncClient
 
 from zimran.fastapi import create_app
+from zimran.fastapi.dependencies import get_user_id
 
 
 @pytest.fixture
 def app() -> FastAPI:
     app_ = create_app()
 
-    async def endpoint() -> Response:
-        return Response(status_code=status.HTTP_200_OK)
+    async def endpoint(user_id: int = Depends(get_user_id)) -> Response:
+        return JSONResponse({'user_id': user_id})
 
     app_.add_api_route('/endpoint', endpoint)
+    app_.add_api_route('/user-id/', endpoint)
     return app_
 
 
