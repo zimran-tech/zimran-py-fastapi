@@ -16,7 +16,7 @@ def app() -> FastAPI:
     async def endpoint(user_id: int = Depends(get_user_id)) -> Response:
         return JSONResponse({'user_id': user_id})
 
-    app_.add_api_route('/endpoint', endpoint)
+    app_.add_api_route('/without-trailing-slash', endpoint)
     app_.add_api_route('/user-id/', endpoint)
     return app_
 
