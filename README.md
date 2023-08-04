@@ -7,9 +7,17 @@ pip install zimran-fastapi
 ## Usage
 
 ```python
+from zimran.config import CommonSettings
 from zimran.fastapi import create_app
 
-app = create_app()
+
+class Settings(CommonSettings):
+    pass
+
+
+settings = Settings()
+
+app = create_app(settings.environment)
 ```
 
 ```python
