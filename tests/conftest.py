@@ -4,6 +4,7 @@ import pytest
 from fastapi import Depends, FastAPI, Response
 from fastapi.responses import JSONResponse
 from httpx import AsyncClient
+from zimran.config import Environment
 
 from zimran.fastapi import create_app
 from zimran.fastapi.dependencies import get_user_id
@@ -11,7 +12,7 @@ from zimran.fastapi.dependencies import get_user_id
 
 @pytest.fixture
 def app() -> FastAPI:
-    app_ = create_app()
+    app_ = create_app(Environment.PRODUCTION)
 
     async def handler(user_id: int = Depends(get_user_id)) -> Response:
         return JSONResponse({'user_id': user_id})
