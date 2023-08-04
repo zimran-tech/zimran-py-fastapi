@@ -1,5 +1,5 @@
 [flake8]
 max-line-length = 100
 import-order-style = smarkets
-application-import-names = zimran
+application-import-names = zimran.fastapi
 exclude = venv
