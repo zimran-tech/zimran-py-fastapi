@@ -12,7 +12,7 @@ from zimran.fastapi.dependencies import get_user_id
 
 @pytest.fixture
 def app() -> FastAPI:
-    app_ = create_app(Environment.PRODUCTION)
+    app_ = create_app(Environment.DEVELOPMENT)
 
     async def handler(user_id: int = Depends(get_user_id)) -> Response:
         return JSONResponse({'user_id': user_id})
