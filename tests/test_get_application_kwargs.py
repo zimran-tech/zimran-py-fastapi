@@ -3,14 +3,16 @@ from typing import Any
 import pytest
 from zimran.config import Environment
 
-from zimran.fastapi import _get_application_kwargs, _PRODUCTION_APPLICATION_KWARGS
+from zimran.fastapi import (
+    _DEVELOPMENT_APPLICATION_KWARGS, _get_application_kwargs, _PRODUCTION_APPLICATION_KWARGS,
+)
 
 
 @pytest.mark.parametrize(
     'environment, application_kwargs',
     [
-        (Environment.DEVELOPMENT, {}),
-        (Environment.STAGING, {}),
+        (Environment.DEVELOPMENT, _DEVELOPMENT_APPLICATION_KWARGS),
+        (Environment.STAGING, _DEVELOPMENT_APPLICATION_KWARGS),
         (Environment.PRODUCTION, _PRODUCTION_APPLICATION_KWARGS),
     ],
 )

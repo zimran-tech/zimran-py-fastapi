@@ -5,9 +5,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import APIRoute
 from zimran.config import Environment
 
+_DEVELOPMENT_APPLICATION_KWARGS = {
+    'docs_url': '/docs/',
+    'redoc_url': '/redoc/',
+    'swagger_ui_oauth2_redirect_url': '/docs/oauth2-redirect/',
+    'openapi_url': '/openapi.json/',
+}
+
 _PRODUCTION_APPLICATION_KWARGS = {
     'docs_url': None,
     'redoc_url': None,
+    'swagger_ui_oauth2_redirect_url': None,
     'openapi_url': None,
 }
 
@@ -18,7 +26,7 @@ async def _health_handler() -> Response:
 
 def _get_application_kwargs(environment: Environment) -> dict[str, Any]:
     if environment in {Environment.DEVELOPMENT, Environment.STAGING}:
-        return {}
+        return _DEVELOPMENT_APPLICATION_KWARGS
 
     return _PRODUCTION_APPLICATION_KWARGS
 
@@ -39,6 +47,6 @@ def create_app(environment: Environment) -> FastAPI:
         route: APIRoute
 
         for route in app.routes:  # type: ignore[assignment]
-            assert route.path.endswith('/'), "Route path must end with '/'"
+            assert route.path.endswith('/'), f"Route '{route.path}' must end with '/'"
 
     return app
