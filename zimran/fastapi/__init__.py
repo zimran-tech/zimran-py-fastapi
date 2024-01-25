@@ -1,10 +1,8 @@
+from contextlib import asynccontextmanager
 from typing import Any
 
 from fastapi import FastAPI, Response, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.routing import APIRoute
-from starlette.types import Lifespan
-
 from zimran.config import Environment
 
 _DEVELOPMENT_APPLICATION_DOCS_KWARGS = {
@@ -33,10 +31,22 @@ def _get_application_docs_kwargs(environment: Environment) -> dict[str, Any]:
     return _PRODUCTION_APPLICATION_DOCS_KWARGS
 
 
-def create_app(environment: Environment, **kwargs) -> FastAPI:
+def create_app(environment: Environment, **kwargs) -> FastAPI:  # type: ignore
     kwargs.setdefault('title', 'Zimran App')
-
     kwargs.update(_get_application_docs_kwargs(environment))
+
+    @asynccontextmanager  # type: ignore
+    async def _lifespan(app: FastAPI) -> None:
+        for route in app.routes:
+            assert route.path.endswith('/'), f"Route '{route.path}' must end with '/'"  # type: ignore # noqa: E501
+
+        if lifespan := kwargs.pop('lifespan', None):
+            async with lifespan(app):
+                yield
+        else:
+            yield
+
+    kwargs['lifespan'] = _lifespan
 
     app = FastAPI(**kwargs)
 
@@ -48,8 +58,5 @@ def create_app(environment: Environment, **kwargs) -> FastAPI:
         allow_headers=['*'],
     )
     app.add_api_route('/health/', _health_handler)
-
-    for route in app.routes:  # type: ignore[assignment]
-        assert route.path.endswith('/'), f"Route '{route.path}' must end with '/'"
 
     return app
