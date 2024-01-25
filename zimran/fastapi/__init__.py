@@ -9,7 +9,7 @@ _DEVELOPMENT_APPLICATION_DOCS_KWARGS = {
     'docs_url': '/docs/',
     'redoc_url': '/redoc/',
     'swagger_ui_oauth2_redirect_url': '/docs/oauth2-redirect/',
-    'openapi_url': '/openapi.json/',
+    'openapi_url': '/schema/',
 }
 
 _PRODUCTION_APPLICATION_DOCS_KWARGS = {
