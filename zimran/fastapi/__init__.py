@@ -31,8 +31,15 @@ def _get_application_kwargs(environment: Environment) -> dict[str, Any]:
     return _PRODUCTION_APPLICATION_KWARGS
 
 
-def create_app(environment: Environment) -> FastAPI:
-    app = FastAPI(**_get_application_kwargs(environment))
+def create_app(service_name: str, environment: Environment, lifespan = None) -> FastAPI:
+    app_conf = {
+        'title': service_name,
+        'description': f'{service_name} API',
+        'lifespan': lifespan,
+        'version': '1.0.0',
+        **_get_application_kwargs(environment),
+    }
+    app = FastAPI(**app_conf)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=['*'],
