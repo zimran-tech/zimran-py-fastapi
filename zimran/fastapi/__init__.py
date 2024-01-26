@@ -40,6 +40,9 @@ def create_app(environment: Environment, **kwargs) -> FastAPI:  # type: ignore
         for route in app.routes:
             assert route.path.endswith('/'), f"Route '{route.path}' must end with '/'"  # type: ignore # noqa: E501
 
+        if app.router.on_startup or app.router.on_shutdown or kwargs.get('on_startup') or kwargs.get('on_shutdown'):
+            raise Exception('Cannot use on_startup or on_shutdown with lifespan context manager')
+
         if lifespan := kwargs.pop('lifespan', None):
             async with lifespan(app):
                 yield
