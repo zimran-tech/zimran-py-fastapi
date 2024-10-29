@@ -1,2 +1,2 @@
-fastapi
+fastapi[standard]
 zimran-config==1.1.*
