@@ -1,2 +1,3 @@
 fastapi
+uvloop
 zimran-config==1.1.*
