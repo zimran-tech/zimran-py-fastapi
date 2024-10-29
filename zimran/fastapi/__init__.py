@@ -51,7 +51,9 @@ def create_app(environment: Environment, **kwargs) -> FastAPI:  # type: ignore
         @asynccontextmanager
         async def _lifespan(app: FastAPI) -> None:
             async with lifespan_(app):
-                await asyncio.gather(_check_trailing_slash(app.routes), _check_deprecated_hooks(app))
+                await asyncio.gather(
+                    _check_trailing_slash(app.routes), _check_deprecated_hooks(app),
+                )
 
                 yield
     else:
