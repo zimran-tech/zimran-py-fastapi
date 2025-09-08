@@ -1,8 +1,9 @@
 import asyncio
+import contextvars
 from contextlib import asynccontextmanager
 from typing import Any
 
-from fastapi import FastAPI, Response, status
+from fastapi import FastAPI, Request, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from zimran.config import Environment
 
@@ -20,9 +21,17 @@ _PRODUCTION_APPLICATION_DOCS_KWARGS = {
     'openapi_url': None,
 }
 
+user_agent_var = contextvars.ContextVar("user_agent", default="-")
+
 
 async def _health_handler() -> Response:
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+async def _user_agent_context_middleware(request: Request, call_next):
+    user_agent_var.set(request.headers.get("user-agent", "-"))
+    response = await call_next(request)
+    return response
 
 
 def _get_application_docs_kwargs(environment: Environment) -> dict[str, Any]:
@@ -74,6 +83,7 @@ def create_app(environment: Environment, **kwargs) -> FastAPI:  # type: ignore
         allow_methods=['*'],
         allow_headers=['*'],
     )
+    app.middleware("http")(_user_agent_context_middleware)
     app.add_api_route('/health/', _health_handler)
 
     return app
