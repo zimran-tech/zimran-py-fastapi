@@ -40,7 +40,9 @@ async def add_user_agent_to_logs(request: Request, call_next):
 
     with logger.contextualize(platform=platform):
         response: Response = await call_next(request)
-        logger.info("{} {} -> {} [{}]", request.method, request.url.path, response.status_code, platform)
+        logger.info(
+            "{} {} -> {} {}", request.method, request.url.path, response.status_code, platform
+        )
         return response
 
 
