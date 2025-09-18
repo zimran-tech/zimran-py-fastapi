@@ -1,2 +1,4 @@
 fastapi[standard]
 zimran-config==1.1.*
+loguru
+user-agents

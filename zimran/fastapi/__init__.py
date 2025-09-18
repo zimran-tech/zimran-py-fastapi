@@ -2,8 +2,10 @@ import asyncio
 from contextlib import asynccontextmanager
 from typing import Any
 
-from fastapi import FastAPI, Response, status
+from fastapi import FastAPI, Request, Response, status
 from fastapi.middleware.cors import CORSMiddleware
+from loguru import logger
+from user_agents import parse
 from zimran.config import Environment
 
 _DEVELOPMENT_APPLICATION_DOCS_KWARGS = {
@@ -23,6 +25,23 @@ _PRODUCTION_APPLICATION_DOCS_KWARGS = {
 
 async def _health_handler() -> Response:
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+async def add_user_agent_to_logs(request: Request, call_next):
+    ua_string = request.headers.get("user-agent", "-")
+    user_agent = parse(ua_string)
+
+    platform = "web"
+    if user_agent.is_mobile:
+        if "android" in user_agent.os.family.lower():
+            platform = "android"
+        elif "ios" in user_agent.os.family.lower() or "iphone" in user_agent.os.family.lower():
+            platform = "ios"
+
+    with logger.contextualize(platform=platform):
+        response: Response = await call_next(request)
+        logger.info("{} {} -> {} [{}]", request.method, request.url.path, response.status_code, platform)
+        return response
 
 
 def _get_application_docs_kwargs(environment: Environment) -> dict[str, Any]:
@@ -66,6 +85,8 @@ def create_app(environment: Environment, **kwargs) -> FastAPI:  # type: ignore
     kwargs['lifespan'] = _lifespan
 
     app = FastAPI(**kwargs)
+
+    app.middleware("http")(add_user_agent_to_logs)
 
     app.add_middleware(
         CORSMiddleware,
