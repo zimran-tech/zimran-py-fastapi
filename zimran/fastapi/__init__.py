@@ -28,21 +28,18 @@ async def _health_handler() -> Response:
 
 
 async def add_user_agent_to_logs(request: Request, call_next):
-    ua_string = request.headers.get("user-agent", "-")
+    ua_string = request.headers.get('user-agent', '-')
     user_agent = parse(ua_string)
 
-    platform = "web"
+    platform = 'web'
     if user_agent.is_mobile:
-        if "android" in user_agent.os.family.lower():
-            platform = "android"
-        elif "ios" in user_agent.os.family.lower() or "iphone" in user_agent.os.family.lower():
-            platform = "ios"
+        if 'android' in user_agent.os.family.lower():
+            platform = 'android'
+        elif 'ios' in user_agent.os.family.lower() or 'iphone' in user_agent.os.family.lower():
+            platform = 'ios'
 
     with logger.contextualize(platform=platform):
         response: Response = await call_next(request)
-        logger.info(
-            "{} {} -> {} {}", request.method, request.url.path, response.status_code, platform
-        )
         return response
 
 
@@ -88,7 +85,7 @@ def create_app(environment: Environment, **kwargs) -> FastAPI:  # type: ignore
 
     app = FastAPI(**kwargs)
 
-    app.middleware("http")(add_user_agent_to_logs)
+    app.middleware('http')(add_user_agent_to_logs)
 
     app.add_middleware(
         CORSMiddleware,
