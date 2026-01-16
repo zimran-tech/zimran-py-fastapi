@@ -1,4 +1,5 @@
 fastapi[standard]
+zimran-py-core==0.1.*
 zimran-config==1.1.*
 loguru==0.7.3
 user-agents==2.2.0
