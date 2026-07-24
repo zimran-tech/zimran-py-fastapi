@@ -3,7 +3,7 @@ from typing import AsyncGenerator
 import pytest
 from fastapi import Depends, FastAPI, Response
 from fastapi.responses import JSONResponse
-from httpx import AsyncClient
+from httpx import ASGITransport, AsyncClient
 from zimran.config import Environment
 
 from zimran.fastapi import create_app
@@ -24,5 +24,6 @@ def app() -> FastAPI:
 
 @pytest.fixture
 async def client(app: FastAPI) -> AsyncGenerator[AsyncClient, None]:
-    async with AsyncClient(app=app, base_url='http://test') as async_client:
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url='http://test') as async_client:
         yield async_client
